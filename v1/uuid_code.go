@@ -3,6 +3,8 @@ package v1
 import (
 	"errors"
 	"fmt"
+
+	"golang.org/x/exp/slices"
 )
 
 var (
@@ -58,6 +60,24 @@ func (uuid *UuidCode) GetNext(oldCode string) (string, error) {
 		return string(newList), nil
 	}
 	return "", errors.New("no value changed")
+}
+
+func (uuid *UuidCode) ConvertCode(input, max_len int) string {
+	output := make([]byte, 0, max_len)
+	for {
+		result := int(input / uuid.DigitLength)
+		remainder := input % uuid.DigitLength
+		output = append(output, uuid.DigitList[remainder])
+		input = result
+		if result < 1 || len(output) >= max_len {
+			break
+		}
+	}
+	for i := max_len - len(output) - 1; i >= 0; i-- {
+		output = append(output, uuid.DigitList[0])
+	}
+	slices.Reverse(output)
+	return string(output)
 }
 
 func NewDefaultUuidCode() *UuidCode {

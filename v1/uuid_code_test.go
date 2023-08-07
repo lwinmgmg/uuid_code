@@ -62,3 +62,18 @@ func TestNewUuidCode(t *testing.T) {
 		t.Error("Expected exceed max range error")
 	}
 }
+
+func TestConvertCode(t *testing.T) {
+	uuidCode := uuid_code.NewDefaultUuidCode()
+	expectedResults := map[[2]int]string{
+		{0, 5}:        "00000",
+		{60466175, 5}: "zzzzz",
+		{10, 5}:       "0000a",
+	}
+	for k, v := range expectedResults {
+		res := uuidCode.ConvertCode(k[0], k[1])
+		if res != v {
+			t.Errorf("Expected %v, get %v", v, res)
+		}
+	}
+}
